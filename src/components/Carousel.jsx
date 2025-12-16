@@ -1,8 +1,10 @@
 import React from "react";
 import Slider from "react-slick";
+import { useNavigate } from "react-router-dom";
 import { useData } from "../context/DataContext";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { FaShoppingCart } from "react-icons/fa";
 import Category from "./Category";
 
 // ✅ Custom Arrows - Hidden on mobile
@@ -62,9 +64,13 @@ const backgroundColors = [
     "bg-gradient-to-r from-[#0c0b15] via-[#1c1b3b] to-[#0c0b15]",
 ];
 
+
+
+
 // ✅ Main Carousel
 const Carousel = () => {
     const { data, loading, error } = useData();
+    const navigate = useNavigate();
 
     const settings = {
         dotsClass: "slick-dots !bottom-4 md:!bottom-6",
@@ -121,7 +127,7 @@ const Carousel = () => {
             <Slider {...settings}>
                 {data.slice(0, 7).map((item, index) => {
                     const bgColor = backgroundColors[index % backgroundColors.length];
-                    
+
                     return (
                         <div
                             key={item.id}
@@ -129,7 +135,7 @@ const Carousel = () => {
                         >
                             <div className={`w-full px-4 sm:px-6 md:px-8 lg:px-16 py-6 sm:py-8 md:py-10 ${bgColor}`}>
                                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 md:gap-16 h-auto min-h-[350px] sm:min-h-[400px] md:h-[500px]">
-                                    
+
                                     {/* DETAILS SECTION - Order changed for mobile */}
                                     <div className="w-full md:w-1/2 lg:w-2/5 space-y-4 sm:space-y-6 order-2 md:order-1">
                                         <h6 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight text-center md:text-left">
@@ -151,11 +157,29 @@ const Carousel = () => {
                                             {item.description}
                                         </p>
 
-                                        <div className="flex justify-center md:justify-start">
-                                            <button className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 active:scale-95 w-full sm:w-auto max-w-xs">
+                                        {/* <div className="flex justify-center md:justify-start">
+                                            <button
+                                                onClick={() => navigate(`/products/${item.id}`)}
+                                                className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all duration-300 w-full sm:w-auto max-w-xs"
+                                            ><FaShoppingCart className="text-lg" />
                                                 Shop Now
                                             </button>
+                                        </div> */}
+                                        <div className="flex justify-center md:justify-start">
+                                            <button
+                                                onClick={() => navigate(`/products/${item.id}`)}
+                                                className="flex items-center justify-center gap-2 
+                                                            bg-red-500 hover:bg-red-600 text-white 
+                                                            px-5 py-2 sm:px-6 sm:py-3 
+                                                            rounded-lg font-semibold 
+                                                            transition-all duration-300 
+                                                            w-full sm:w-auto max-w-xs"
+                                                        >
+                                                <FaShoppingCart className="text-lg" />
+                                                <span>Shop Now</span>
+                                            </button>
                                         </div>
+
                                     </div>
 
                                     {/* IMAGE SECTION - Comes first on mobile */}
@@ -175,7 +199,7 @@ const Carousel = () => {
                     );
                 })}
             </Slider>
-            <Category/>
+            <Category />
         </div>
     );
 };

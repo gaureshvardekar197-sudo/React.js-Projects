@@ -20,7 +20,7 @@ const Cart = () => {
     <div className="mt-20 max-w-6xl mx-auto mb-10 px-4">
 
       {cartItem.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 space-y-6">
+        <div className="flex flex-col items-center justify-center py-10 space-y-6">
           <img
             src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
             alt="Empty Cart"
