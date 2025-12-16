@@ -4,6 +4,7 @@ import App from "./App";
 import { DataProvider } from "./context/DataContext";
 import { CartProvider } from "./context/CartContext";
 import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 createRoot(document.getElementById("root")).render(
     <React.StrictMode>

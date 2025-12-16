@@ -7,8 +7,16 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = usecart();
 
+  const handleAddToCart = () => {
+    // Create a new product object with quantity property
+    const productWithQuantity = {
+      ...product,
+      quantity: 1
+    };
+    addToCart(productWithQuantity);
+  };
+
   return (
-    
     <div
       className="
         border border-gray-200 rounded-2xl bg-white cursor-pointer
@@ -16,7 +24,6 @@ const ProductCard = ({ product }) => {
         p-3 sm:p-4 flex flex-col
       "
     >
-      
       {/* Product Image */}
       <div
         className="
@@ -49,7 +56,7 @@ const ProductCard = ({ product }) => {
 
       {/* Add to Cart */}
       <button
-        onClick={() => addToCart(product)}
+        onClick={handleAddToCart}
         className="
           bg-red-500 mt-4 px-3 py-2 sm:px-4 sm:py-2.5
           text-base sm:text-lg rounded-lg text-white 

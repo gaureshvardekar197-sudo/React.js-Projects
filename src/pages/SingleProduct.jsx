@@ -34,9 +34,18 @@ const SingleProduct = () => {
   const totalStars = 5;
   const filledStars = Math.round(singleProduct.rating.rate);
 
+  const handleAddToCart = () => {
+    // Add product with current quantity from the SingleProduct page
+    addToCart({
+      ...singleProduct,
+      quantity: quantity // Pass the current quantity from SingleProduct
+    });
+    // Optionally reset quantity after adding to cart
+    setQuantity(1);
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-2 gap-16 mt-20">
-
       {/* IMAGE */}
       <div className="flex items-center justify-center shadow-xl rounded-xl p-10 border">
         <img
@@ -52,9 +61,7 @@ const SingleProduct = () => {
           {singleProduct.category}
         </p>
 
-        <h1 className="text-4xl font-bold">
-          {singleProduct.title}
-        </h1>
+        <h1 className="text-4xl font-bold">{singleProduct.title}</h1>
 
         {/* RATING */}
         <div className="flex items-center gap-2">
@@ -85,18 +92,16 @@ const SingleProduct = () => {
 
           <div className="flex items-center border rounded-lg overflow-hidden">
             <button
-              onClick={() => setQuantity(q => Math.max(1, q - 1))}
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               className="px-4 py-1 text-xl font-bold bg-gray-100 hover:bg-gray-200"
             >
               −
             </button>
 
-            <span className="px-4 py-1 text-lg font-semibold">
-              {quantity}
-            </span>
+            <span className="px-4 py-1 text-lg font-semibold">{quantity}</span>
 
             <button
-              onClick={() => setQuantity(q => q + 1)}
+              onClick={() => setQuantity((q) => q + 1)}
               className="px-4 py-1 text-xl font-bold bg-gray-100 hover:bg-gray-200"
             >
               +
@@ -104,31 +109,16 @@ const SingleProduct = () => {
           </div>
         </div>
 
-
         {/* DESCRIPTION */}
-        <p className="text-gray-600">
-          {singleProduct.description}
-        </p>
+        <p className="text-gray-600">{singleProduct.description}</p>
 
         {/* ADD TO CART */}
-        {/* <button
-          onClick={() =>
-            addToCart({
-              ...singleProduct,
-              quantity,
-            })
-          }
+        <button
+          onClick={handleAddToCart}
           className="bg-red-500 px-7 py-3 text-white rounded-lg font-semibold hover:bg-red-600"
         >
           Add to Cart
-        </button> */}
-        <button
-  onClick={() => addToCart({ ...singleProduct, quantity })}
-  className="bg-red-500 px-7 py-3 text-white rounded-lg font-semibold hover:bg-red-600"
->
-  Add to Cart
-</button>
-
+        </button>
       </div>
     </div>
   );
