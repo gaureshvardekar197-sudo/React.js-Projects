@@ -45,7 +45,7 @@ const SingleProduct = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-2 gap-16 mt-20">
+    <div className="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-2 gap-16 mt-12">
       {/* IMAGE */}
       <div className="flex items-center justify-center shadow-xl rounded-xl p-10 border">
         <img
