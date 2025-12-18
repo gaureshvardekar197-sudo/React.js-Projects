@@ -1,19 +1,22 @@
 import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   FiShoppingCart,
   FiUser,
   FiSearch,
   FiMenu,
   FiX,
-  FiHeart
+  FiHeart,
 } from "react-icons/fi";
 import { usecart } from "../context/CartContext";
 
 const Navbar = () => {
-  const { cartItem, wishlistItems } = usecart(); // ✅ from context
+  const { cartItem, wishlistItems } = usecart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const navigate = useNavigate();
 
   const linkClass = ({ isActive }) =>
     isActive
@@ -30,6 +33,16 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products/?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+      setIsSearchOpen(false);
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   const navLinks = [
     { path: "/", label: "Home" },
     { path: "/about", label: "About" },
@@ -39,40 +52,49 @@ const Navbar = () => {
 
   return (
     <header className="w-full backdrop-blur-md bg-white/70 shadow-md fixed top-0 left-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between py-4 px-4 md:px-6">
-
+      <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-4 sm:py-4 sm:px-6 lg:px-8">
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-2xl text-gray-700 hover:text-red-500 transition"
+          className="lg:hidden text-2xl text-gray-700 hover:text-red-500 transition"
           onClick={toggleMobileMenu}
         >
           {isMobileMenuOpen ? <FiX /> : <FiMenu />}
         </button>
 
         {/* Logo */}
-        <div className="flex-1 md:flex-none">
+        <div className="flex-1 lg:flex-none">
           <Link to="/">
-            <h1 className="font-bold text-2xl md:text-3xl tracking-wide text-center md:text-left">
+            <h1 className="font-bold text-2xl sm:text-3xl lg:text-4xl tracking-wide text-center lg:text-left">
               <span className="text-red-500 font-serif">My</span>Store
             </h1>
           </Link>
         </div>
 
-        {/* Search - Desktop */}
-        <div className="flex-1 px-4 md:px-10 hidden md:block">
-          <input
-            type="text"
-            placeholder="Search for products..."
-            className="w-full border border-gray-200 rounded-full px-5 py-2 
-                       focus:outline-none focus:ring-2 focus:ring-red-400 shadow-sm"
-          />
-          
+        {/* Search - Desktop & Tablet */}
+        <div className="hidden sm:block flex-1 px-4 sm:px-6 lg:px-8">
+          <form onSubmit={handleSearch} className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for products..."
+              className="w-full border border-gray-200 rounded-full px-4 sm:px-5 py-2 
+                         focus:outline-none focus:ring-2 focus:ring-red-400 shadow-sm"
+            />
+            <button
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 
+                         text-gray-500 hover:text-red-500 transition"
+            >
+              <FiSearch className="text-xl" />
+            </button>
+          </form>
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-6">
           <nav>
-            <ul className="flex gap-8 items-center text-lg font-semibold">
+            <ul className="flex gap-6 items-center text-lg font-semibold">
               {navLinks.map((link, i) => (
                 <NavLink key={i} to={link.path} className={linkClass}>
                   <li className="relative cursor-pointer after:absolute after:left-0 after:-bottom-1 
@@ -84,7 +106,7 @@ const Navbar = () => {
             </ul>
           </nav>
 
-          {/* ❤️ Wishlist */}
+          {/* Wishlist */}
           <div className="relative">
             <Link to="/wishlist" className="text-gray-700 hover:text-red-500 transition">
               <FiHeart className="text-2xl" />
@@ -97,7 +119,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* 🛒 Cart */}
+          {/* Cart */}
           <div className="relative">
             <Link to="/cart" className="text-gray-700 hover:text-red-500 transition">
               <FiShoppingCart className="text-2xl" />
@@ -122,7 +144,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Icons */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-4 sm:hidden">
           <button
             className="text-gray-700 hover:text-red-500 transition"
             onClick={toggleSearch}
@@ -130,7 +152,7 @@ const Navbar = () => {
             <FiSearch className="text-2xl" />
           </button>
 
-          {/* Wishlist Mobile */}
+          {/* Wishlist */}
           <div className="relative">
             <Link to="/wishlist" className="text-gray-700 hover:text-red-500 transition">
               <FiHeart className="text-2xl" />
@@ -143,7 +165,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Cart Mobile */}
+          {/* Cart */}
           <div className="relative">
             <Link to="/cart" className="text-gray-700 hover:text-red-500 transition">
               <FiShoppingCart className="text-2xl" />
@@ -160,20 +182,31 @@ const Navbar = () => {
 
       {/* Mobile Search */}
       {isSearchOpen && (
-        <div className="md:hidden px-4 pb-4">
-          <input
-            type="text"
-            placeholder="Search for products..."
-            className="w-full border border-gray-200 rounded-full px-5 py-3 
-                       focus:outline-none focus:ring-2 focus:ring-red-400 shadow-sm"
-            autoFocus
-          />
+        <div className="sm:hidden px-4 pb-4">
+          <form onSubmit={handleSearch} className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for products..."
+              className="w-full border border-gray-200 rounded-full px-5 py-3 
+                         focus:outline-none focus:ring-2 focus:ring-red-400 shadow-sm"
+              autoFocus
+            />
+            <button
+              type="submit"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 
+                         text-gray-500 hover:text-red-500 transition"
+            >
+              <FiSearch className="text-xl" />
+            </button>
+          </form>
         </div>
       )}
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t shadow-lg">
+        <div className="lg:hidden bg-white border-t shadow-lg">
           <nav className="py-6">
             <ul className="flex flex-col gap-6 items-center text-lg font-semibold">
               {navLinks.map((link, i) => (
@@ -187,6 +220,7 @@ const Navbar = () => {
                 </NavLink>
               ))}
 
+              {/* Mobile Sign In */}
               <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)}>
                 <button className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white 
                                 font-semibold px-6 py-3 rounded-full mt-4">
