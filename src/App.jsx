@@ -11,6 +11,7 @@ import Navbar from './components/Navbar';
 import Carousel from './components/Carousel';
 import Footer from './components/Footer';
 import SingleProduct from './pages/SingleProduct';
+import WishlistPage from './pages/Wishlist';
 
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/Wishlist" element={<WishlistPage />} />
         <Route path="/sign" element={<Sign />} />
       </Routes>
       <Footer />

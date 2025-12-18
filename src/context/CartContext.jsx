@@ -91,6 +91,25 @@ export const CartProvider = ({ children }) => {
         )
     );
   };
+/* ================= WISHLIST STATE ================= */
+const [wishlistItems, setWishlistItems] = useState([]);
+
+const toggleWishlist = (product) => {
+  const exists = wishlistItems.some((item) => item.id === product.id);
+
+  if (exists) {
+    setWishlistItems((prev) =>
+      prev.filter((item) => item.id !== product.id)
+    );
+    toast.error("Removed from wishlist");
+  } else {
+    setWishlistItems((prev) => [...prev, product]);
+    toast.success("Added to wishlist ❤️");
+  }
+};
+
+const isWishlisted = (id) =>
+  wishlistItems.some((item) => item.id === id);
 
   return (
     <CartContext.Provider
@@ -101,6 +120,10 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         testToast, // Add this for testing
+        /* Wishlist */
+        wishlistItems,
+        toggleWishlist,
+        isWishlisted,
       }}
     >
       {children}

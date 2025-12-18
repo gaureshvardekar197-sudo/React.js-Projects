@@ -43,59 +43,59 @@ const Cart = () => {
           <h1 className="font-bold text-3xl mb-5">My Cart ({cartItem.length})</h1>
 
           <div className="mt-6 space-y-6">
-  {cartItem.map((item) => (
-    <div
-      key={item.id}
-      className="bg-white rounded-xl shadow-lg p-4 flex flex-col md:flex-row items-center justify-between hover:shadow-2xl transition-shadow duration-300"
-    >
-      {/* Product Image */}
-      <div className="flex items-center gap-4 w-full md:w-2/5">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-24 h-24 md:w-28 md:h-28 rounded-lg object-contain bg-gray-50 p-2"
-        />
-        <div className="flex-1">
-          <h1 className="font-semibold text-gray-800 line-clamp-2 text-base md:text-lg">
-            {item.title}
-          </h1>
-          <p className="text-red-500 font-bold text-lg mt-1">₹{item.price}</p>
-        </div>
-      </div>
+            {cartItem.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-xl shadow-lg p-4 flex flex-col md:flex-row items-center justify-between hover:shadow-2xl transition-shadow duration-300"
+              >
+                {/* Product Image */}
+                <div className="flex items-center gap-4 w-full md:w-2/5">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-24 h-24 md:w-28 md:h-28 rounded-lg object-contain bg-gray-50 p-2"
+                  />
+                  <div className="flex-1">
+                    <h1 className="font-semibold text-gray-800 line-clamp-2 text-base md:text-lg">
+                      {item.title}
+                    </h1>
+                    <p className="text-red-500 font-bold text-lg mt-1">₹{item.price}</p>
+                  </div>
+                </div>
 
-      {/* Quantity + Total Price */}
-      <div className="flex items-center gap-4 mt-4 md:mt-0">
-        <button
-          onClick={() => decreaseQuantity(item.id)}
-          className="px-3 py-1 bg-gray-200  font-bold  transition"
-        >
-          -
-        </button>
-        <span className="px-3 py-1 border rounded text-gray-700 font-medium bg-gray-50">
-          {item.quantity}
-        </span>
-        <button
-          onClick={() => increaseQuantity(item.id)}
-          className="px-3 py-1 bg-gray-200  font-bold  transition"
-        >
-          +
-        </button>
-        <p className="ml-6 font-bold text-lg text-gray-800">
-          ₹{item.price * item.quantity}
-        </p>
-      </div>
+                {/* Quantity + Total Price */}
+                <div className="flex items-center gap-4 mt-4 md:mt-0">
+                  <button
+                    onClick={() => decreaseQuantity(item.id)}
+                    className="px-3 py-1 bg-gray-200  font-bold  transition"
+                  >
+                    -
+                  </button>
+                  <span className="px-3 py-1 border rounded text-gray-700 font-medium bg-gray-50">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => increaseQuantity(item.id)}
+                    className="px-3 py-1 bg-gray-200  font-bold  transition"
+                  >
+                    +
+                  </button>
+                  <p className="ml-6 font-bold text-lg text-gray-800">
+                    ₹{item.price * item.quantity}
+                  </p>
+                </div>
 
-      {/* Remove Button */}
-      <button
-        onClick={() => deleteItem(item.id)}
-        className="flex items-center gap-2 mt-4 md:mt-0 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
-      >
-        <FaRegTrashAlt className="text-white text-lg" />
-        Remove
-      </button>
-    </div>
-  ))}
-</div>
+                {/* Remove Button */}
+                <button
+                  onClick={() => deleteItem(item.id)}
+                  className="flex items-center gap-2 mt-4 md:mt-0 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
+                >
+                  <FaRegTrashAlt className="text-white text-lg" />
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
 
 
 
