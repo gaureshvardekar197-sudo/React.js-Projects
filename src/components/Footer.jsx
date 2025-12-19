@@ -59,12 +59,12 @@ const Footer = () => {
           <h3 className='text-xl font-semibold mb-2'>Stay in the Loop</h3>
           <p className='text-sm'>Subscribe to get special offers, free giveaways, and more</p>
           <form className='mt-4 flex flex-col sm:flex-row gap-2'>
-            <input 
+            {/* <input 
               type="email" 
               placeholder='Your email address'
               className='w-full p-2 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500'
             />
-            <button type='submit' className='bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700'>Subscribe</button>
+            <button type='submit' className='bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700'>Subscribe</button> */}
           </form>
         </div>
       </div>
