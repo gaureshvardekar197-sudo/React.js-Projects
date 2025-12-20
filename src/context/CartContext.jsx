@@ -1,15 +1,71 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItem, setCartItem] = useState([]);
+  // Load cart from localStorage on initial render
+  const [cartItem, setCartItem] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem("cart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
+      return [];
+    }
+  });
+
+  // Load wishlist from localStorage on initial render
+  const [wishlistItems, setWishlistItems] = useState(() => {
+    try {
+      const savedWishlist = localStorage.getItem("wishlist");
+      return savedWishlist ? JSON.parse(savedWishlist) : [];
+    } catch (error) {
+      console.error("Error loading wishlist from localStorage:", error);
+      return [];
+    }
+  });
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("cart", JSON.stringify(cartItem));
+    } catch (error) {
+      console.error("Error saving cart to localStorage:", error);
+      toast.error("Failed to save cart data");
+    }
+  }, [cartItem]);
+
+  // Save wishlist to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
+    } catch (error) {
+      console.error("Error saving wishlist to localStorage:", error);
+      toast.error("Failed to save wishlist data");
+    }
+  }, [wishlistItems]);
 
   // Debug function to check if toast is working
   const testToast = () => {
     console.log("Testing toast...");
     toast.success("Test toast message!");
+  };
+
+  // Clear all cart items
+  const clearCart = () => {
+    setCartItem([]);
+    toast.info("Cart cleared");
+  };
+
+  // Get total items count
+  const getCartTotalItems = () => {
+    return cartItem.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  // Get total price
+  const getCartTotalPrice = () => {
+    return cartItem.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   // Add product to cart
@@ -24,11 +80,12 @@ export const CartProvider = ({ children }) => {
         const quantityToAdd = product.quantity || quantity;
         
         if (existingProduct) {
-          return prev.map((item) =>
+          const updatedCart = prev.map((item) =>
             item.id === product.id
               ? { ...item, quantity: item.quantity + quantityToAdd }
               : item
           );
+          return updatedCart;
         } else {
           return [...prev, { ...product, quantity: quantityToAdd }];
         }
@@ -46,23 +103,27 @@ export const CartProvider = ({ children }) => {
       
     } catch (error) {
       console.error("Error in addToCart:", error);
-      alert(`Error adding to cart: ${error.message}`); // Fallback
+      toast.error(`Error adding to cart: ${error.message}`);
     }
   };
 
   // Remove product from cart
   const deleteItem = (productId) => {
     try {
-      setCartItem((prev) => prev.filter((item) => item.id !== productId));
+      setCartItem((prev) => {
+        const updatedCart = prev.filter((item) => item.id !== productId);
+        return updatedCart;
+      });
       
       if (typeof toast.error === 'function') {
         toast.error("Product removed");
       } else {
         console.error("toast.error is not a function");
-        alert("Product removed"); // Fallback
+        alert("Product removed");
       }
     } catch (error) {
       console.error("Error in deleteItem:", error);
+      toast.error("Error removing product");
     }
   };
 
@@ -91,39 +152,70 @@ export const CartProvider = ({ children }) => {
         )
     );
   };
-/* ================= WISHLIST STATE ================= */
-const [wishlistItems, setWishlistItems] = useState([]);
 
-const toggleWishlist = (product) => {
-  const exists = wishlistItems.some((item) => item.id === product.id);
-
-  if (exists) {
-    setWishlistItems((prev) =>
-      prev.filter((item) => item.id !== product.id)
+  // Update quantity directly
+  const updateQuantity = (productId, newQuantity) => {
+    if (newQuantity < 1) return;
+    
+    setCartItem((prev) =>
+      prev.map((item) =>
+        item.id === productId
+          ? { ...item, quantity: newQuantity }
+          : item
+      )
     );
-    toast.error("Removed from wishlist");
-  } else {
-    setWishlistItems((prev) => [...prev, product]);
-    toast.success("Added to wishlist ❤️");
-  }
-};
+  };
 
-const isWishlisted = (id) =>
-  wishlistItems.some((item) => item.id === id);
+  // Check if product is in cart
+  const isInCart = (productId) => {
+    return cartItem.some((item) => item.id === productId);
+  };
+
+  /* ================= WISHLIST FUNCTIONS ================= */
+  const toggleWishlist = (product) => {
+    const exists = wishlistItems.some((item) => item.id === product.id);
+
+    if (exists) {
+      setWishlistItems((prev) =>
+        prev.filter((item) => item.id !== product.id)
+      );
+      toast.error("Removed from wishlist");
+    } else {
+      setWishlistItems((prev) => [...prev, product]);
+      toast.success("Added to wishlist ❤️");
+    }
+  };
+
+  const isWishlisted = (id) =>
+    wishlistItems.some((item) => item.id === id);
+
+  // Clear wishlist
+  const clearWishlist = () => {
+    setWishlistItems([]);
+    toast.info("Wishlist cleared");
+  };
 
   return (
     <CartContext.Provider
       value={{
+        // Cart
         cartItem,
         addToCart,
         deleteItem,
         increaseQuantity,
         decreaseQuantity,
-        testToast, // Add this for testing
-        /* Wishlist */
+        updateQuantity,
+        clearCart,
+        getCartTotalItems,
+        getCartTotalPrice,
+        isInCart,
+        testToast,
+        
+        // Wishlist
         wishlistItems,
         toggleWishlist,
         isWishlisted,
+        clearWishlist,
       }}
     >
       {children}

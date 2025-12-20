@@ -1,16 +1,75 @@
-import React from "react";
+import React, { useState } from "react";
 import { usecart } from "../context/CartContext";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { MdDeliveryDining } from "react-icons/md";
 import { LuNotebookText } from "react-icons/lu";
 import { GiShoppingBag } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // Add this import
 
 const Cart = () => {
-  const { cartItem, deleteItem, increaseQuantity, decreaseQuantity } = usecart();
+  const { cartItem, deleteItem, increaseQuantity, decreaseQuantity, clearCart } = usecart();
   const navigate = useNavigate();
 
-  // Total price calculation considering quantity
+  // Add delivery form state
+  const [deliveryForm, setDeliveryForm] = useState({
+    fullName: "",
+    address: "",
+    state: "",
+    pincode: "",
+    country: "",
+    phone: ""
+  });
+
+  // Handle form input changes
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setDeliveryForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle form submission
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted:", deliveryForm);
+    toast.success("Delivery information saved!");
+  };
+
+  // Handle checkout
+  const handleCheckout = () => {
+    if (!deliveryForm.fullName || !deliveryForm.address || !deliveryForm.phone) {
+      toast.error("Please fill in all required delivery information");
+      return;
+    }
+
+    // Create order
+    const order = {
+      orderId: `ORD-${Date.now()}`,
+      date: new Date().toISOString(),
+      items: cartItem,
+      deliveryInfo: deliveryForm,
+      totalItems: cartItem.reduce((total, item) => total + item.quantity, 0),
+      subtotal: cartItem.reduce((total, item) => total + item.price * item.quantity, 0),
+      deliveryCharge: 0,
+      handlingCharge: 10,
+      grandTotal: cartItem.reduce((total, item) => total + item.price * item.quantity, 0) + 10
+    };
+
+    // Save order to localStorage
+    const previousOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+    previousOrders.push(order);
+    localStorage.setItem("orders", JSON.stringify(previousOrders));
+
+    // Clear cart
+    clearCart();
+
+    toast.success(`Order placed successfully! Order ID: ${order.orderId}`);
+    navigate("/");
+  };
+
+  // Total price calculation
   const totalPrice = cartItem.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -28,7 +87,7 @@ const Cart = () => {
           />
           <h2 className="text-3xl font-bold text-gray-700">Your Cart is Empty</h2>
           <p className="text-gray-500 text-lg text-center max-w-md">
-            Looks like you haven’t added anything to your cart yet.
+            Looks like you haven't added anything to your cart yet.
             Start shopping to see items here.
           </p>
           <button
@@ -67,7 +126,7 @@ const Cart = () => {
                 <div className="flex items-center gap-4 mt-4 md:mt-0">
                   <button
                     onClick={() => decreaseQuantity(item.id)}
-                    className="px-3 py-1 bg-gray-200  font-bold  transition"
+                    className="px-3 py-1 bg-gray-200 font-bold transition"
                   >
                     -
                   </button>
@@ -76,7 +135,7 @@ const Cart = () => {
                   </span>
                   <button
                     onClick={() => increaseQuantity(item.id)}
-                    className="px-3 py-1 bg-gray-200  font-bold  transition"
+                    className="px-3 py-1 bg-gray-200 font-bold transition"
                   >
                     +
                   </button>
@@ -97,44 +156,94 @@ const Cart = () => {
             ))}
           </div>
 
-
-
           {/* Delivery & Billing */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
             {/* Delivery Info */}
             <div className="bg-gray-100 rounded-md p-7 space-y-4">
               <h1 className="text-gray-800 font-bold text-xl mb-2">Delivery Info</h1>
-              <div className="flex flex-col space-y-2">
-                <label>Full name</label>
-                <input type="text" placeholder="Enter your name" className="p-2 rounded-md w-full" />
-              </div>
-              <div className="flex flex-col space-y-2">
-                <label>Address</label>
-                <input type="text" placeholder="Enter your Address" className="p-2 rounded-md w-full" />
-              </div>
-              <div className="flex gap-5">
-                <div className="flex flex-col space-y-2 w-full">
-                  <label>State</label>
-                  <input type="text" placeholder="Enter your State" className="p-2 rounded-md w-full" />
+              <form onSubmit={handleFormSubmit}>
+                <div className="flex flex-col space-y-2">
+                  <label>Full name *</label>
+                  <input 
+                    type="text" 
+                    name="fullName"
+                    value={deliveryForm.fullName}
+                    onChange={handleFormChange}
+                    placeholder="Enter your name" 
+                    className="p-2 rounded-md w-full" 
+                    required
+                  />
                 </div>
-                <div className="flex flex-col space-y-2 w-full">
-                  <label>PinCode</label>
-                  <input type="text" placeholder="Enter your Postcode" className="p-2 rounded-md w-full" />
+                <div className="flex flex-col space-y-2">
+                  <label>Address *</label>
+                  <input 
+                    type="text" 
+                    name="address"
+                    value={deliveryForm.address}
+                    onChange={handleFormChange}
+                    placeholder="Enter your Address" 
+                    className="p-2 rounded-md w-full" 
+                    required
+                  />
                 </div>
-              </div>
-              <div className="flex gap-5">
-                <div className="flex flex-col space-y-2 w-full">
-                  <label>Country</label>
-                  <input type="text" placeholder="Enter your Country" className="p-2 rounded-md w-full" />
+                <div className="flex gap-5">
+                  <div className="flex flex-col space-y-2 w-full">
+                    <label>State *</label>
+                    <input 
+                      type="text" 
+                      name="state"
+                      value={deliveryForm.state}
+                      onChange={handleFormChange}
+                      placeholder="Enter your State" 
+                      className="p-2 rounded-md w-full" 
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2 w-full">
+                    <label>PinCode *</label>
+                    <input 
+                      type="text" 
+                      name="pincode"
+                      value={deliveryForm.pincode}
+                      onChange={handleFormChange}
+                      placeholder="Enter your Pincode" 
+                      className="p-2 rounded-md w-full" 
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col space-y-2 w-full">
-                  <label>Phone No</label>
-                  <input type="text" placeholder="Enter your Phone Number" className="p-2 rounded-md w-full" />
+                <div className="flex gap-5">
+                  <div className="flex flex-col space-y-2 w-full">
+                    <label>Country</label>
+                    <input 
+                      type="text" 
+                      name="country"
+                      value={deliveryForm.country}
+                      onChange={handleFormChange}
+                      placeholder="Enter your Country" 
+                      className="p-2 rounded-md w-full" 
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2 w-full">
+                    <label>Phone No *</label>
+                    <input 
+                      type="text" 
+                      name="phone"
+                      value={deliveryForm.phone}
+                      onChange={handleFormChange}
+                      placeholder="Enter your Phone Number" 
+                      className="p-2 rounded-md w-full" 
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-              <button className="bg-red-500 text-white px-3 py-2 rounded-md mt-3 w-full cursor-pointer">
-                Submit
-              </button>
+                <button 
+                  type="submit"
+                  className="bg-red-500 text-white px-3 py-2 rounded-md mt-3 w-full cursor-pointer hover:bg-red-600 transition"
+                >
+                  Save Delivery Info
+                </button>
+              </form>
             </div>
 
             {/* Billing Info */}
@@ -165,7 +274,10 @@ const Cart = () => {
                 <h1 className="font-semibold text-lg">Grand Total</h1>
                 <p className="font-semibold text-lg">₹{totalPrice + 10}</p>
               </div>
-              <button className="bg-red-500 text-white px-3 py-2 rounded-md w-full cursor-pointer mt-8">
+              <button 
+                onClick={handleCheckout} 
+                className="bg-red-500 text-white px-3 py-2 rounded-md w-full cursor-pointer mt-8 hover:bg-red-600 transition"
+              >
                 Proceed to Checkout
               </button>
             </div>
